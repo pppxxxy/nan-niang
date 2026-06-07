@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff7ab6" />
+  <title>测测男娘指数</title>
+  <style>
+    :root{--bg1:#fff0f7;--bg2:#eaf4ff;--card:#ffffffd9;--text:#2b2430;--muted:#74697c;--pink:#ff6fb1;--purple:#9b7cff;--line:#f1d7e5;--shadow:0 18px 45px rgba(255,111,177,.22)}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2)) fixed}
+    .wrap{width:min(720px,100%);margin:0 auto;padding:18px 14px 32px}
+    .hero{position:relative;overflow:hidden;padding:24px 18px 18px;border-radius:28px;background:linear-gradient(135deg,#fff8fc,#f0f9ff);box-shadow:var(--shadow);border:1px solid #fff}
+    .hero:before,.hero:after{content:"";position:absolute;border-radius:999px;opacity:.55}.hero:before{width:120px;height:120px;right:-35px;top:-35px;background:#ffd1e6}.hero:after{width:90px;height:90px;left:-28px;bottom:-28px;background:#bfe9ff}
+    h1{position:relative;margin:0;font-size:30px;line-height:1.15}.sub{position:relative;margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.7}.badge{position:relative;display:inline-flex;gap:6px;align-items:center;margin-top:14px;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;color:#a04472}
+    form{margin-top:16px}.q{margin:14px 0;padding:16px;border-radius:22px;background:var(--card);border:1px solid rgba(255,255,255,.85);box-shadow:0 8px 22px rgba(80,60,90,.08);backdrop-filter:blur(10px)}
+    .q h2{margin:0 0 12px;font-size:17px;line-height:1.45}.opts{display:grid;gap:10px}.opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;transition:.18s ease}.opt:active{transform:scale(.99)}.opt input{width:19px;height:19px;margin:1px 0 0;accent-color:var(--pink)}.opt span{font-size:15px;line-height:1.45;color:#433846}.hint{font-size:12px;color:#8b7d91;margin-top:10px}
+    .bar{position:sticky;bottom:0;z-index:5;padding:12px 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,240,247,0),rgba(255,240,247,.96) 25%,rgba(234,244,255,.96))}.btn{width:100%;border:0;border-radius:18px;padding:15px 18px;font-size:17px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 12px 26px rgba(255,111,177,.35);cursor:pointer}.btn.secondary{margin-top:10px;background:linear-gradient(135deg,#7ecbff,#8b8cff);box-shadow:none}.btn:active{transform:translateY(1px)}
+    .result{display:none;margin-top:16px;padding:22px;border-radius:28px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);text-align:center}.score{font-size:58px;font-weight:900;line-height:1;margin:12px 0;background:linear-gradient(135deg,var(--pink),#7aa7ff);-webkit-background-clip:text;background-clip:text;color:transparent}.comment{font-size:16px;line-height:1.8;color:#4b3c52;margin:8px 0 0}.small{font-size:12px;color:#8d8193;line-height:1.6;margin-top:14px}.toast{display:none;margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff3f8;border:1px solid #ffd2e6;color:#9c3c69;font-size:13px;line-height:1.5}
+    @media (min-width:560px){.opts{grid-template-columns:1fr 1fr}.hero{padding:30px}h1{font-size:36px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>测测男娘指数</h1>
+      <p class="sub">轻松整活向小问卷：共 10 题，每题 5 个选项，可多选。点确认后会随机生成 0～10 分结果和一句评语。</p>
+      <div class="badge">✨ 移动端适配 · QQ 内可访问 · 仅供娱乐</div>
+    </section>
+    <form id="quiz">
+      <div id="questions"></div>
+      <div id="toast" class="toast">请至少选择一个选项再生成结果哦～</div>
+      <div class="bar"><button class="btn" type="submit">确认，生成我的指数</button></div>
+    </form>
+    <section id="result" class="result" aria-live="polite">
+      <h2>你的男娘指数是</h2>
+      <div class="score"><span id="score">0</span>/10</div>
+      <p id="comment" class="comment"></p>
+      <button id="again" class="btn secondary" type="button">再测一次</button>
+      <p class="small">说明：分数为随机生成，问卷结果不代表任何真实评价，请开心玩梗、友善分享。</p>
+    </section>
+  </main>
+  <script>
+    const data=[
+      ['出门前你更在意什么？',['发型有没有蓬松','衣服配色够不够可爱','香香的味道','手机自拍角度','能不能准时到']],
+      ['看到可爱的饰品你会？',['先收藏链接','想象搭配效果','问朋友好不好看','直接冲','假装没看见但心动']],
+      ['朋友夸你可爱时，你的反应？',['表面淡定','偷偷开心','立刻撒娇','反夸回去','截图留念']],
+      ['你喜欢的聊天语气包括？',['温柔一点','带点颜文字','偶尔卖萌','简短酷酷的','看对象切换']],
+      ['拍照时你常用的姿势？',['比耶','托脸','歪头','找镜子自拍','能躲就躲']],
+      ['你对粉色的态度？',['非常喜欢','小面积点缀可以','看设计','嘴上拒绝身体诚实','暂时无感']],
+      ['游戏/头像取名时你倾向？',['可爱风','日系风','抽象整活','高冷神秘','随机生成']],
+      ['被要求语音撒娇你会？',['果断拒绝','看心情','小声试试','熟人限定','已经准备好了']],
+      ['你衣柜里可能出现？',['宽松卫衣','浅色单品','可爱袜子','配饰小物','全黑套装']],
+      ['如果给今天的自己加特效？',['猫耳','爱心泡泡','闪闪滤镜','蓝粉渐变','无特效也很强']]
+    ];
+    const comments=['纯路过型：男娘指数很低，但整活潜力正在潜伏。','轻微心动型：偶尔可爱一下，反差感刚刚好。','入门萌新型：已经有一点点可爱气场了。','稳定发挥型：会在不经意间散发软萌感。','可爱预备役：你的细节搭配已经开始发光。','甜度在线型：朋友可能已经偷偷觉得你很会。','高能反差型：帅气和可爱切换自如。','软萌高手型：一句话一个表情都很有画面。','超强氛围型：自带蓝粉渐变滤镜。','天赋拉满型：可爱能量过载，请注意补充奶茶。','传说级男娘指数：今日主角就是你，闪闪发光！'];
+    const qs=document.getElementById('questions');
+    data.forEach((q,i)=>{const box=document.createElement('section');box.className='q';box.innerHTML='<h2>'+(i+1)+'. '+q[0]+'</h2><div class="opts">'+q[1].map((t,j)=>'<label class="opt"><input type="checkbox" name="q'+i+'" value="'+j+'"><span>'+t+'</span></label>').join('')+'</div><div class="hint">本题可多选</div>';qs.appendChild(box)});
+    const form=document.getElementById('quiz'),result=document.getElementById('result'),scoreEl=document.getElementById('score'),commentEl=document.getElementById('comment'),toast=document.getElementById('toast');
+    form.addEventListener('submit',e=>{e.preventDefault();const checked=document.querySelectorAll('input[type="checkbox"]:checked').length;if(!checked){toast.style.display='block';toast.scrollIntoView({behavior:'smooth',block:'center'});return}toast.style.display='none';const score=Math.floor(Math.random()*11);scoreEl.textContent=score;commentEl.textContent=comments[score];result.style.display='block';result.scrollIntoView({behavior:'smooth',block:'center'})});
+    document.getElementById('again').addEventListener('click',()=>{document.querySelectorAll('input[type="checkbox"]').forEach(i=>i.checked=false);result.style.display='none';toast.style.display='none';window.scrollTo({top:0,behavior:'smooth'})});
+  </script>
+</body>
+</html>
